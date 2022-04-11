@@ -31,6 +31,8 @@ import {JobService} from "../utils/web_config";
 
 import axios from 'axios';
 
+import { useSnackbar } from "notistack";
+
 const useStyles = makeStyles((theme) => ({
   form: {
     border:"solid 1px #000",
@@ -56,6 +58,8 @@ function JobApply(props){
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const steps = getSteps();
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const totalSteps = () => {
     return steps.length;
@@ -120,20 +124,28 @@ function JobApply(props){
   const [loading,setLoading]=useState(false);
   const save_profile=()=>{
     if(firstName.value==""){
+      show_message("Enter first name");
       setFirstName({value:"",error:"Enter first name"});
     }else if(lastName.value==""){
+      show_message("Enter last name")
       setLastName({value:"",error:"Enter last name"});
     }else if(phoneNumber.value==""){
+      show_message("Enter phone number")
       setPhoneNumber({value:"",error:"Enter phone number"});
     }else if(email.value==""){
+      show_message("Enter your emailv")
       setEmail({value:"",error:"Enter your email"});
     }else if(degree.value==""){
+      show_message("Select your degree")
       setDegree({value:"",error:"Select your degree"});
     }else if(experience.value==0){
+      show_message("Atleast 1 year experience")
       setExperience({value:"",error:"Atleast 1 year experience"});
     }else if(country.value==""){
+      show_message("Enter your country")
       setCountry({value:"",error:"Enter your country"});
     }else if(gender.value==""){
+      show_message("Select your gender")
       setGender({value:"",error:"Select your gender"});
     }else{
       setLoading(true);
@@ -155,10 +167,28 @@ function JobApply(props){
         var data=res.data.data;
         console.log(data);
         upload_cv(data.id);
+        
       })
       .catch(err=>{
         setLoading(false);
         console.log(err);
+        var e = err.message;
+        if (err.response) {
+          e = err.response.data.message;
+          enqueueSnackbar(e, {
+            variant: "error",
+            action: (k) => (
+              <IconButton
+                onClick={() => {
+                  closeSnackbar(k);
+                }}
+                size="small"
+              >
+                <Close fontSize="small" />
+              </IconButton>
+            ),
+          });
+        }
       });
 
     }
@@ -189,10 +219,42 @@ function JobApply(props){
       setGender({value:"",error:""});
       setCountry({value:"",error:""});
       setCv(null);
+
+      enqueueSnackbar(res.data.message, {
+        variant: "success",
+        action: (k) => (
+          <IconButton
+            onClick={() => {
+              closeSnackbar(k);
+            }}
+            size="small"
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        ),
+      });
     })
     .catch(err=>{
       setLoading(false);
       console.log(err);
+    });
+  }
+
+  // error message 
+
+  const show_message=(message)=>{
+    enqueueSnackbar(message, {
+      variant: "error",
+      action: (k) => (
+        <IconButton
+          onClick={() => {
+            closeSnackbar(k);
+          }}
+          size="small"
+        >
+          <Close fontSize="small" />
+        </IconButton>
+      ),
     });
   }
 

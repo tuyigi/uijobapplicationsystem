@@ -33,6 +33,8 @@ import {JobService} from "../utils/web_config";
 
 import { useHistory } from "react-router-dom";
 
+import { useSnackbar } from "notistack";
+
 import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
  paper: {
@@ -43,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 function Login(props){
   const classes = useStyles();
   const history = useHistory();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   useEffect(()=>{
     axios.defaults.baseURL = new JobService().BASE_URL;
@@ -67,15 +70,46 @@ function Login(props){
       const loginInstance = axios.create(new JobService().getMsHeaders());
       loginInstance.post("/api/v1/authenticate",obj)
       .then(res=>{
+        enqueueSnackbar("Logged in successful", {
+          variant: "success",
+          action: (k) => (
+            <IconButton
+              onClick={() => {
+                closeSnackbar(k);
+              }}
+              size="small"
+            >
+              <Close fontSize="small" />
+            </IconButton>
+          ),
+        });
 
         var data=res.data.data;
-        var token=data.token;
         localStorage.setItem("hr_profile", JSON.stringify(res.data.data));
         history.push("/home");
         setLoading(false);
 
       })
       .catch(err=>{
+        var e = err.message;
+        if (err.response) {
+          e = err.response.data.message;
+          enqueueSnackbar(e, {
+            variant: "error",
+            action: (k) => (
+              <IconButton
+                onClick={() => {
+                  closeSnackbar(k);
+                }}
+                size="small"
+              >
+                <Close fontSize="small" />
+              </IconButton>
+            ),
+          });
+        }
+       
+
         setLoading(false);
       });
     }

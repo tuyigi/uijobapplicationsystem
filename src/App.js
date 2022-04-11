@@ -12,8 +12,18 @@ import Login from "./component/login";
 import Home from "./component/home";
 import Applicant from "./component/applicant";
 
+import { SnackbarProvider } from "notistack";
+
 function App(props) {
   return (
+    <SnackbarProvider
+    preventDuplicate
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "right",
+    }}
+    maxSnack={2}
+  >
     <Router>
         <Switch>
           <Route exact path="/" component={() => <JobApply {...props} />} />
@@ -22,6 +32,7 @@ function App(props) {
           <Route path="/applicant" component={() => <Applicant {...props} />} />
         </Switch>
       </Router>
+    </SnackbarProvider>
   );
 }
 

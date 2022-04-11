@@ -29,6 +29,7 @@ import {
 import {JobService} from "../utils/web_config";
 
 import axios from 'axios';
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -42,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 function Home(props){
   const classes = useStyles();
   const history=useHistory();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [hrProfile,setHrProfile]=useState({});
 
@@ -272,9 +274,40 @@ const columns = [
       objs[index]['status']="DROPPED";
       setApplicants(objs);
       setLoading(false);
+
+      enqueueSnackbar(res.data.message, {
+        variant: "success",
+        action: (k) => (
+          <IconButton
+            onClick={() => {
+              closeSnackbar(k);
+            }}
+            size="small"
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        ),
+      });
     })
     .catch(err=>{
       setLoading(false);
+      var e = err.message;
+        if (err.response) {
+          e = err.response.data.message;
+          enqueueSnackbar(e, {
+            variant: "error",
+            action: (k) => (
+              <IconButton
+                onClick={() => {
+                  closeSnackbar(k);
+                }}
+                size="small"
+              >
+                <Close fontSize="small" />
+              </IconButton>
+            ),
+          });
+        }
     })
 
  }
@@ -290,9 +323,39 @@ const columns = [
       objs[index]['status']="PASSED";
       setApplicants(objs);
       setLoading(false);
+      enqueueSnackbar(res.data.message, {
+        variant: "success",
+        action: (k) => (
+          <IconButton
+            onClick={() => {
+              closeSnackbar(k);
+            }}
+            size="small"
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        ),
+      });
     })
     .catch(err=>{
       setLoading(false);
+      var e = err.message;
+        if (err.response) {
+          e = err.response.data.message;
+          enqueueSnackbar(e, {
+            variant: "error",
+            action: (k) => (
+              <IconButton
+                onClick={() => {
+                  closeSnackbar(k);
+                }}
+                size="small"
+              >
+                <Close fontSize="small" />
+              </IconButton>
+            ),
+          });
+        }
     })
 
  }
